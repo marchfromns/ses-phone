@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>누군가의 휴대폰</title>
+<title>송대리님 핸드폰 훔쳐보기</title>
+<meta property="og:title" content="송대리님 핸드폰 훔쳐보기">
+<meta name="twitter:title" content="송대리님 핸드폰 훔쳐보기">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <script>
 /* =========================================================
@@ -437,7 +439,8 @@ body{display:flex;justify-content:center;align-items:center;overflow:hidden}
 .dock{position:absolute;left:12px;right:12px;bottom:22px;height:90px;border-radius:30px;background:rgba(255,255,255,.35);
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;justify-content:space-around;align-items:center}
 .homebar{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;border-radius:3px;background:#111;z-index:50;cursor:pointer}
-.homebar:before{content:"";position:absolute;left:-30px;right:-30px;top:-22px;bottom:-8px}
+.homebar:before{content:"";position:absolute;left:-60px;right:-60px;top:-26px;bottom:-8px}
+.homebar{touch-action:none}
 
 /* screens */
 .screen{position:absolute;inset:0;background:var(--app);padding-top:50px;transform:translateX(100%);transition:transform .32s ease;
@@ -816,10 +819,13 @@ function unlock(openMsg){
   if(openMsg){ const i=P.chats.findIndex(c=>c.name==="원빈이"); setTimeout(()=>{ open_("chat"); openRoom(i); },300); }
 }
 renderLock();
-(()=>{ const H=$("homebar"); let y0=null;
-  H.addEventListener("pointerdown",e=>{ y0=e.clientY; try{H.setPointerCapture(e.pointerId)}catch(_){} });
-  H.addEventListener("pointerup",e=>{ if(y0===null) return; const dy=e.clientY-y0; y0=null; if(dy<=10) goHome(); });
+(()=>{ const H=$("homebar"); let y0=null, done=false;
+  const go=()=>{ if(done) return; done=true; goHome(); };
+  H.addEventListener("pointerdown",e=>{ y0=e.clientY; done=false; try{H.setPointerCapture(e.pointerId)}catch(_){} });
+  H.addEventListener("pointermove",e=>{ if(y0!==null && e.clientY-y0 < -25) go(); });
+  H.addEventListener("pointerup",e=>{ if(y0===null) return; const dy=e.clientY-y0; y0=null; if(dy<=10) go(); });
   H.addEventListener("pointercancel",()=>{ y0=null; });
+  H.addEventListener("touchmove",e=>e.preventDefault(),{passive:false});
 })();
 
 /* 📲 통화 */
